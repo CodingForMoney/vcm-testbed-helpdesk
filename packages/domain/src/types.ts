@@ -1,4 +1,7 @@
-export const TICKET_STATUSES = ["open", "pending", "resolved", "closed"] as const;
+// Canonical ticket status set and single source of truth for `TicketStatus`.
+// `archived` is a terminal state (SLA `stopped`) reachable only from `resolved`
+// or `closed`, and may be restored to `open`. Order is the queue display order.
+export const TICKET_STATUSES = ["open", "pending", "resolved", "closed", "archived"] as const;
 export type TicketStatus = typeof TICKET_STATUSES[number];
 
 export const TICKET_PRIORITIES = ["low", "normal", "high", "urgent"] as const;
