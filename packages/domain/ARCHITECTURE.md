@@ -29,13 +29,15 @@ database, API, and web layers.
 
 ## Important Behavior
 
-- `computeSlaState(ticket, now)`: `stopped` for `resolved`/`closed`; `overdue`
-  when `dueAt` is past; `due_soon` within a 4-hour window; otherwise `healthy`.
-  Invalid `dueAt` falls back to `healthy`.
+- `computeSlaState(ticket, now)`: `stopped` for `resolved`/`closed`/`archived`;
+  `overdue` when `dueAt` is past; `due_soon` within a 4-hour window; otherwise
+  `healthy`. Invalid `dueAt` falls back to `healthy`.
 - `dueAtForPriority(priority, now)`: SLA windows of urgent 4h, high 8h, normal
   24h, low 72h, returned as ISO strings.
 - `assertStatusTransition(from, to)`: enforces the allowed transition map;
   same-state is a no-op; illegal transitions throw `Invalid status transition`.
+  `archived` is a terminal/restore state: reachable only from `resolved` or
+  `closed`, and may transition back to `open`.
 - `normalizeTag` / `normalizeTags`: lowercase, hyphenate whitespace, strip
   non-`[a-z0-9-]`, dedupe, and sort.
 - `matchesFilter` / `filterTickets`: search across title/requester/assignee/tags

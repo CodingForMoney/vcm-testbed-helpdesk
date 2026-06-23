@@ -1,7 +1,8 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
+import { TICKET_STATUSES } from "@vcm-testbed/domain";
 import { addComment, bulkAssign, bulkTag, createTicket, getDashboard, getTicket, listAgents, listTickets, updateTicket } from "../api.js";
-const ALL_STATUS = ["all", "open", "pending", "resolved", "closed"];
+const ALL_STATUS = ["all", ...TICKET_STATUSES];
 const ALL_PRIORITY = ["all", "urgent", "high", "normal", "low"];
 export function App() {
     const [agents, setAgents] = useState([]);
@@ -92,6 +93,7 @@ function DashboardBar({ dashboard }) {
         ["Total", dashboard?.total ?? 0],
         ["Open", dashboard?.byStatus.open ?? 0],
         ["Pending", dashboard?.byStatus.pending ?? 0],
+        ["Archived", dashboard?.byStatus.archived ?? 0],
         ["Overdue", dashboard?.bySla.overdue ?? 0],
         ["Due soon", dashboard?.bySla.due_soon ?? 0],
         ["Unassigned", dashboard?.unassigned ?? 0]

@@ -52,9 +52,10 @@ mirrored in `.ai/generated/module-index.json`.
 ## Domain Model
 
 - **Ticket**: a customer issue with `status` (`open` → `pending` → `resolved` →
-  `closed`), `priority` (`low`/`normal`/`high`/`urgent`), requester, optional
-  assignee, tags, timestamps, an SLA `dueAt`, and a derived `slaState`. Detail
-  views also carry `description`, `comments`, and `auditLog`.
+  `closed`, plus `archived` — a terminal state reachable from `resolved`/`closed`
+  that can be restored to `open`), `priority` (`low`/`normal`/`high`/`urgent`),
+  requester, optional assignee, tags, timestamps, an SLA `dueAt`, and a derived
+  `slaState`. Detail views also carry `description`, `comments`, and `auditLog`.
 - **Agent**: support staff member who can own tickets (id, name, email, team).
 - **Comment**: an internal, append-only note on a ticket.
 - **Audit entry**: an immutable record of ticket changes (create, update,

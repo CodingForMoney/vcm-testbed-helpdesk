@@ -8,6 +8,7 @@ import type {
   TicketStatus,
   TicketSummary
 } from "@vcm-testbed/domain";
+import { TICKET_STATUSES } from "@vcm-testbed/domain";
 import {
   addComment,
   bulkAssign,
@@ -20,7 +21,7 @@ import {
   updateTicket
 } from "../api.js";
 
-const ALL_STATUS: Array<TicketStatus | "all"> = ["all", "open", "pending", "resolved", "closed"];
+const ALL_STATUS: Array<TicketStatus | "all"> = ["all", ...TICKET_STATUSES];
 const ALL_PRIORITY: Array<TicketPriority | "all"> = ["all", "urgent", "high", "normal", "low"];
 
 export function App() {
@@ -177,6 +178,7 @@ function DashboardBar({ dashboard }: { dashboard: DashboardSummary | null }) {
     ["Total", dashboard?.total ?? 0],
     ["Open", dashboard?.byStatus.open ?? 0],
     ["Pending", dashboard?.byStatus.pending ?? 0],
+    ["Archived", dashboard?.byStatus.archived ?? 0],
     ["Overdue", dashboard?.bySla.overdue ?? 0],
     ["Due soon", dashboard?.bySla.due_soon ?? 0],
     ["Unassigned", dashboard?.unassigned ?? 0]
