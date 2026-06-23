@@ -247,7 +247,7 @@
           "name": "matchesFilter",
           "source": {
             "path": "packages/domain/src/rules.ts",
-            "line": 68
+            "line": 69
           },
           "signature": "export function matchesFilter(ticket: TicketSummary, filter: TicketFilter = {}): boolean"
         },
@@ -257,7 +257,7 @@
           "name": "filterTickets",
           "source": {
             "path": "packages/domain/src/rules.ts",
-            "line": 101
+            "line": 102
           },
           "signature": "export function filterTickets(tickets: TicketSummary[], filter: TicketFilter = {}): TicketSummary[]"
         },
@@ -267,7 +267,7 @@
           "name": "summarizeDashboard",
           "source": {
             "path": "packages/domain/src/rules.ts",
-            "line": 105
+            "line": 106
           },
           "signature": "export function summarizeDashboard(tickets: TicketSummary[]): DashboardSummary"
         },
@@ -277,7 +277,7 @@
           "name": "toSummary",
           "source": {
             "path": "packages/domain/src/rules.ts",
-            "line": 140
+            "line": 142
           },
           "signature": "export function toSummary(details: TicketDetails): TicketSummary"
         },
@@ -287,9 +287,9 @@
           "name": "TICKET_STATUSES",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 1
+            "line": 4
           },
-          "signature": "export const TICKET_STATUSES = [\"open\", \"pending\", \"resolved\", \"closed\"] as const"
+          "signature": "export const TICKET_STATUSES = [\"open\", \"pending\", \"resolved\", \"closed\", \"archived\"] as const"
         },
         {
           "path": "TicketStatus",
@@ -297,7 +297,7 @@
           "name": "TicketStatus",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 2
+            "line": 5
           },
           "signature": "export type TicketStatus = typeof TICKET_STATUSES[number]"
         },
@@ -307,7 +307,7 @@
           "name": "TICKET_PRIORITIES",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 4
+            "line": 7
           },
           "signature": "export const TICKET_PRIORITIES = [\"low\", \"normal\", \"high\", \"urgent\"] as const"
         },
@@ -317,7 +317,7 @@
           "name": "TicketPriority",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 5
+            "line": 8
           },
           "signature": "export type TicketPriority = typeof TICKET_PRIORITIES[number]"
         },
@@ -327,7 +327,7 @@
           "name": "SlaState",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 7
+            "line": 10
           },
           "signature": "export type SlaState = \"healthy\" | \"due_soon\" | \"overdue\" | \"stopped\""
         },
@@ -337,7 +337,7 @@
           "name": "Requester",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 9
+            "line": 12
           },
           "signature": "export interface Requester"
         },
@@ -347,7 +347,7 @@
           "name": "Agent",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 14
+            "line": 17
           },
           "signature": "export interface Agent"
         },
@@ -357,7 +357,7 @@
           "name": "Comment",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 21
+            "line": 24
           },
           "signature": "export interface Comment"
         },
@@ -367,7 +367,7 @@
           "name": "AuditEntry",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 29
+            "line": 32
           },
           "signature": "export interface AuditEntry"
         },
@@ -377,7 +377,7 @@
           "name": "TicketSummary",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 39
+            "line": 42
           },
           "signature": "export interface TicketSummary"
         },
@@ -387,7 +387,7 @@
           "name": "TicketDetails",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 54
+            "line": 57
           },
           "signature": "export interface TicketDetails extends TicketSummary"
         },
@@ -397,7 +397,7 @@
           "name": "TicketFilter",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 60
+            "line": 63
           },
           "signature": "export interface TicketFilter"
         },
@@ -407,7 +407,7 @@
           "name": "DashboardSummary",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 68
+            "line": 71
           },
           "signature": "export interface DashboardSummary"
         },
@@ -417,7 +417,7 @@
           "name": "CreateTicketInput",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 76
+            "line": 79
           },
           "signature": "export interface CreateTicketInput"
         },
@@ -427,7 +427,7 @@
           "name": "UpdateTicketInput",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 85
+            "line": 88
           },
           "signature": "export interface UpdateTicketInput"
         }
