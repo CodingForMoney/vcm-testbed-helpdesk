@@ -1,5 +1,28 @@
 # CLAUDE.md
 
+## Project Context
+
+- **Product**: `vcm-testbed-helpdesk` — a compact but realistic internal helpdesk for triaging customer tickets, collaborating via comments, tracking ownership, and monitoring SLA risk. See `docs/product-requirements.md`.
+- **Repository shape**: npm workspaces monorepo, ESM-only (`"type": "module"`), TypeScript project references built with `tsc -b`.
+- **Layers / modules** (see `.ai/generated/module-index.json`):
+  - `packages/domain` (`@vcm-testbed/domain`): framework-free domain types and pure rules (SLA state, due dates, status transitions, tag normalization, filtering, dashboard summaries). No runtime dependencies on other workspace packages.
+  - `packages/db` (`@vcm-testbed/db`): SQLite persistence via `better-sqlite3`, schema/migration, and the `HelpdeskRepository`. Depends on `@vcm-testbed/domain`.
+  - `apps/api` (`@vcm-testbed/api`): Fastify HTTP API with Zod request validation. Depends on `@vcm-testbed/db` and `@vcm-testbed/domain`.
+  - `apps/web` (`@vcm-testbed/web`): React 19 + Vite single-page UI that talks only to the API. Depends on `@vcm-testbed/domain` for shared contract types.
+- **Dependency direction**: `apps/web -> (API HTTP contract)`; `apps/api -> packages/db -> packages/domain`; `apps/api -> packages/domain`. `packages/domain` depends on nothing else in the workspace.
+- **Runtime ports**: API on `http://127.0.0.1:4317` (override with `PORT`/`HOST`), web dev server on `http://localhost:5173`.
+- **Data**: SQLite file at `data/helpdesk.sqlite` (override with `HELPDESK_DB_PATH`); tests use `:memory:`. Seed with `npm run seed`.
+
+## Project Constraints
+
+- Do not add cross-module dependencies that violate the dependency direction above. `packages/domain` must stay free of Fastify, SQLite, React, and Node-server concerns.
+- Keep domain logic pure and framework-free in `packages/domain`; persistence and HTTP concerns belong in `packages/db` and `apps/api`.
+- API request/response contracts are shared by convention through `@vcm-testbed/domain` types (no generated OpenAPI). Keep API shapes and domain types in sync.
+- All packages are ESM; use `.js` extensions in relative TypeScript import specifiers (e.g. `./rules.js`).
+- No authentication, external integrations, email ingestion, real-time updates, or multi-tenancy in current scope (see `docs/product-requirements.md` Non-Goals).
+- Schema setup is deterministic and idempotent (`CREATE TABLE IF NOT EXISTS`); there is no migration framework. Treat schema changes carefully and keep them backward-safe.
+- Local conventions: `tsc -b` is used for both `typecheck` and `lint`; tests run under Vitest (Node environment) via `vitest run`.
+
 <!-- VCM:BEGIN version=1 -->
 ## VCM Start Here
 
