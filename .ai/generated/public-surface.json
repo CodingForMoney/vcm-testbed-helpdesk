@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "kind": "public-surface",
+  "generatedBy": ".ai/tools/generate-public-surface",
+  "visibility": "project-public",
+  "modules": [
+    {
+      "name": "@vcm-testbed/api",
+      "items": [
+        {
+          "path": "CreateAppOptions",
+          "kind": "interface",
+          "name": "CreateAppOptions",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 7
+          },
+          "signature": "export interface CreateAppOptions"
+        },
+        {
+          "path": "createApp",
+          "kind": "function",
+          "name": "createApp",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 51
+          },
+          "signature": "export async function createApp(options: CreateAppOptions = {}): Promise<FastifyInstance>"
+        },
+        {
+          "path": "GET /health",
+          "kind": "route",
+          "name": "GET /health",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 69
+          }
+        },
+        {
+          "path": "GET /agents",
+          "kind": "route",
+          "name": "GET /agents",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 74
+          }
+        },
+        {
+          "path": "GET /tickets",
+          "kind": "route",
+          "name": "GET /tickets",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 78
+          }
+        },
+        {
+          "path": "GET /tickets/:id",
+          "kind": "route",
+          "name": "GET /tickets/:id",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 91
+          }
+        },
+        {
+          "path": "POST /tickets",
+          "kind": "route",
+          "name": "POST /tickets",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 95
+          }
+        },
+        {
+          "path": "PATCH /tickets/:id",
+          "kind": "route",
+          "name": "PATCH /tickets/:id",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 101
+          }
+        },
+        {
+          "path": "POST /tickets/:id/comments",
+          "kind": "route",
+          "name": "POST /tickets/:id/comments",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 108
+          }
+        },
+        {
+          "path": "POST /tickets/bulk/assign",
+          "kind": "route",
+          "name": "POST /tickets/bulk/assign",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 117
+          }
+        },
+        {
+          "path": "POST /tickets/bulk/tag",
+          "kind": "route",
+          "name": "POST /tickets/bulk/tag",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 124
+          }
+        },
+        {
+          "path": "GET /dashboard",
+          "kind": "route",
+          "name": "GET /dashboard",
+          "source": {
+            "path": "apps/api/src/app.ts",
+            "line": 131
+          }
+        }
+      ]
+    },
+    {
+      "name": "@vcm-testbed/web",
+      "items": []
+    },
+    {
+      "name": "@vcm-testbed/db",
+      "items": [
+        {
+          "path": "HelpdeskRepositoryOptions",
+          "kind": "interface",
+          "name": "HelpdeskRepositoryOptions",
+          "source": {
+            "path": "packages/db/src/repository.ts",
+            "line": 57
+          },
+          "signature": "export interface HelpdeskRepositoryOptions"
+        },
+        {
+          "path": "HelpdeskRepository",
+          "kind": "class",
+          "name": "HelpdeskRepository",
+          "source": {
+            "path": "packages/db/src/repository.ts",
+            "line": 63
+          },
+          "signature": "export class HelpdeskRepository"
+        },
+        {
+          "path": "SqliteDatabase",
+          "kind": "type",
+          "name": "SqliteDatabase",
+          "source": {
+            "path": "packages/db/src/schema.ts",
+            "line": 3
+          },
+          "signature": "export type SqliteDatabase = Database.Database"
+        },
+        {
+          "path": "openDatabase",
+          "kind": "function",
+          "name": "openDatabase",
+          "source": {
+            "path": "packages/db/src/schema.ts",
+            "line": 5
+          },
+          "signature": "export function openDatabase(dbPath = defaultDbPath()): SqliteDatabase"
+        },
+        {
+          "path": "defaultDbPath",
+          "kind": "function",
+          "name": "defaultDbPath",
+          "source": {
+            "path": "packages/db/src/schema.ts",
+            "line": 9
+          },
+          "signature": "export function defaultDbPath(): string"
+        },
+        {
+          "path": "migrate",
+          "kind": "function",
+          "name": "migrate",
+          "source": {
+            "path": "packages/db/src/schema.ts",
+            "line": 13
+          },
+          "signature": "export function migrate(db: SqliteDatabase): void"
+        }
+      ]
+    },
+    {
+      "name": "@vcm-testbed/domain",
+      "items": [
+        {
+          "path": "computeSlaState",
+          "kind": "function",
+          "name": "computeSlaState",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 13
+          },
+          "signature": "export function computeSlaState(ticket: Pick<TicketSummary, \"status\" | \"dueAt\">, now = new Date()): SlaState"
+        },
+        {
+          "path": "dueAtForPriority",
+          "kind": "function",
+          "name": "dueAtForPriority",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 32
+          },
+          "signature": "export function dueAtForPriority(priority: TicketPriority, now = new Date()): string"
+        },
+        {
+          "path": "normalizeTag",
+          "kind": "function",
+          "name": "normalizeTag",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 43
+          },
+          "signature": "export function normalizeTag(tag: string): string"
+        },
+        {
+          "path": "normalizeTags",
+          "kind": "function",
+          "name": "normalizeTags",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 47
+          },
+          "signature": "export function normalizeTags(tags: string[] = []): string[]"
+        },
+        {
+          "path": "assertStatusTransition",
+          "kind": "function",
+          "name": "assertStatusTransition",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 51
+          },
+          "signature": "export function assertStatusTransition(from: TicketStatus, to: TicketStatus): void"
+        },
+        {
+          "path": "matchesFilter",
+          "kind": "function",
+          "name": "matchesFilter",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 68
+          },
+          "signature": "export function matchesFilter(ticket: TicketSummary, filter: TicketFilter = {}): boolean"
+        },
+        {
+          "path": "filterTickets",
+          "kind": "function",
+          "name": "filterTickets",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 101
+          },
+          "signature": "export function filterTickets(tickets: TicketSummary[], filter: TicketFilter = {}): TicketSummary[]"
+        },
+        {
+          "path": "summarizeDashboard",
+          "kind": "function",
+          "name": "summarizeDashboard",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 105
+          },
+          "signature": "export function summarizeDashboard(tickets: TicketSummary[]): DashboardSummary"
+        },
+        {
+          "path": "toSummary",
+          "kind": "function",
+          "name": "toSummary",
+          "source": {
+            "path": "packages/domain/src/rules.ts",
+            "line": 140
+          },
+          "signature": "export function toSummary(details: TicketDetails): TicketSummary"
+        },
+        {
+          "path": "TICKET_STATUSES",
+          "kind": "const",
+          "name": "TICKET_STATUSES",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 1
+          },
+          "signature": "export const TICKET_STATUSES = [\"open\", \"pending\", \"resolved\", \"closed\"] as const"
+        },
+        {
+          "path": "TicketStatus",
+          "kind": "type",
+          "name": "TicketStatus",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 2
+          },
+          "signature": "export type TicketStatus = typeof TICKET_STATUSES[number]"
+        },
+        {
+          "path": "TICKET_PRIORITIES",
+          "kind": "const",
+          "name": "TICKET_PRIORITIES",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 4
+          },
+          "signature": "export const TICKET_PRIORITIES = [\"low\", \"normal\", \"high\", \"urgent\"] as const"
+        },
+        {
+          "path": "TicketPriority",
+          "kind": "type",
+          "name": "TicketPriority",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 5
+          },
+          "signature": "export type TicketPriority = typeof TICKET_PRIORITIES[number]"
+        },
+        {
+          "path": "SlaState",
+          "kind": "type",
+          "name": "SlaState",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 7
+          },
+          "signature": "export type SlaState = \"healthy\" | \"due_soon\" | \"overdue\" | \"stopped\""
+        },
+        {
+          "path": "Requester",
+          "kind": "interface",
+          "name": "Requester",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 9
+          },
+          "signature": "export interface Requester"
+        },
+        {
+          "path": "Agent",
+          "kind": "interface",
+          "name": "Agent",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 14
+          },
+          "signature": "export interface Agent"
+        },
+        {
+          "path": "Comment",
+          "kind": "interface",
+          "name": "Comment",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 21
+          },
+          "signature": "export interface Comment"
+        },
+        {
+          "path": "AuditEntry",
+          "kind": "interface",
+          "name": "AuditEntry",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 29
+          },
+          "signature": "export interface AuditEntry"
+        },
+        {
+          "path": "TicketSummary",
+          "kind": "interface",
+          "name": "TicketSummary",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 39
+          },
+          "signature": "export interface TicketSummary"
+        },
+        {
+          "path": "TicketDetails",
+          "kind": "interface",
+          "name": "TicketDetails",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 54
+          },
+          "signature": "export interface TicketDetails extends TicketSummary"
+        },
+        {
+          "path": "TicketFilter",
+          "kind": "interface",
+          "name": "TicketFilter",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 60
+          },
+          "signature": "export interface TicketFilter"
+        },
+        {
+          "path": "DashboardSummary",
+          "kind": "interface",
+          "name": "DashboardSummary",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 68
+          },
+          "signature": "export interface DashboardSummary"
+        },
+        {
+          "path": "CreateTicketInput",
+          "kind": "interface",
+          "name": "CreateTicketInput",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 76
+          },
+          "signature": "export interface CreateTicketInput"
+        },
+        {
+          "path": "UpdateTicketInput",
+          "kind": "interface",
+          "name": "UpdateTicketInput",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 85
+          },
+          "signature": "export interface UpdateTicketInput"
+        }
+      ]
+    }
+  ]
+}

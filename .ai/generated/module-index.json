@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "module-index",
+  "generatedBy": ".ai/tools/generate-module-index",
+  "workspace": {
+    "type": "npm-workspaces",
+    "root": ".",
+    "manifest": "package.json"
+  },
+  "layerInference": {
+    "method": "path-first-segment-from-workspace-root",
+    "rootPackageLayer": "root"
+  },
+  "layers": [
+    {
+      "name": "apps",
+      "path": "apps",
+      "modules": [
+        {
+          "name": "@vcm-testbed/api",
+          "path": "apps/api",
+          "manifest": "apps/api/package.json",
+          "architectureDoc": "apps/api/ARCHITECTURE.md",
+          "workspaceDependencies": [
+            "@vcm-testbed/db",
+            "@vcm-testbed/domain"
+          ],
+          "language": "typescript",
+          "files": {
+            "source": [
+              "apps/api/src/app.ts",
+              "apps/api/src/index.ts"
+            ],
+            "tests": [
+              "apps/api/src/app.test.ts"
+            ]
+          }
+        },
+        {
+          "name": "@vcm-testbed/web",
+          "path": "apps/web",
+          "manifest": "apps/web/package.json",
+          "architectureDoc": "apps/web/ARCHITECTURE.md",
+          "workspaceDependencies": [
+            "@vcm-testbed/domain"
+          ],
+          "language": "typescript",
+          "files": {
+            "source": [
+              "apps/web/src/api.ts",
+              "apps/web/src/main.tsx",
+              "apps/web/src/ui/App.tsx"
+            ],
+            "tests": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "packages",
+      "path": "packages",
+      "modules": [
+        {
+          "name": "@vcm-testbed/db",
+          "path": "packages/db",
+          "manifest": "packages/db/package.json",
+          "architectureDoc": "packages/db/ARCHITECTURE.md",
+          "workspaceDependencies": [
+            "@vcm-testbed/domain"
+          ],
+          "language": "typescript",
+          "files": {
+            "source": [
+              "packages/db/src/index.ts",
+              "packages/db/src/repository.ts",
+              "packages/db/src/schema.ts",
+              "packages/db/src/seed.ts"
+            ],
+            "tests": []
+          }
+        },
+        {
+          "name": "@vcm-testbed/domain",
+          "path": "packages/domain",
+          "manifest": "packages/domain/package.json",
+          "architectureDoc": "packages/domain/ARCHITECTURE.md",
+          "workspaceDependencies": [],
+          "language": "typescript",
+          "files": {
+            "source": [
+              "packages/domain/src/index.ts",
+              "packages/domain/src/rules.ts",
+              "packages/domain/src/types.ts"
+            ],
+            "tests": [
+              "packages/domain/src/rules.test.ts"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
