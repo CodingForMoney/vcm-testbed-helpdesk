@@ -11,7 +11,7 @@ import type {
 const DUE_SOON_WINDOW_MS = 4 * 60 * 60 * 1000;
 
 export function computeSlaState(ticket: Pick<TicketSummary, "status" | "dueAt">, now = new Date()): SlaState {
-  if (ticket.status === "resolved" || ticket.status === "closed") {
+  if (ticket.status === "resolved" || ticket.status === "closed" || ticket.status === "archived") {
     return "stopped";
   }
 
@@ -56,8 +56,9 @@ export function assertStatusTransition(from: TicketStatus, to: TicketStatus): vo
   const allowed: Record<TicketStatus, TicketStatus[]> = {
     open: ["pending", "resolved", "closed"],
     pending: ["open", "resolved", "closed"],
-    resolved: ["open", "closed"],
-    closed: ["open"]
+    resolved: ["open", "closed", "archived"],
+    closed: ["open", "archived"],
+    archived: ["open"]
   };
 
   if (!allowed[from].includes(to)) {
@@ -109,7 +110,8 @@ export function summarizeDashboard(tickets: TicketSummary[]): DashboardSummary {
       open: 0,
       pending: 0,
       resolved: 0,
-      closed: 0
+      closed: 0,
+      archived: 0
     },
     byPriority: {
       low: 0,

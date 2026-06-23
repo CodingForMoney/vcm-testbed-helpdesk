@@ -33,9 +33,27 @@ describe("domain rules", () => {
     expect(computeSlaState({ status: "resolved", dueAt: "2025-12-31T23:00:00.000Z" }, now)).toBe("stopped");
   });
 
+  it("stops SLA for archived tickets regardless of due date", () => {
+    const now = new Date("2026-01-01T00:00:00.000Z");
+    expect(computeSlaState({ status: "archived", dueAt: "2025-12-31T23:00:00.000Z" }, now)).toBe("stopped");
+    expect(computeSlaState({ status: "archived", dueAt: "2026-01-02T00:00:00.000Z" }, now)).toBe("stopped");
+  });
+
   it("rejects unsupported status transitions", () => {
     expect(() => assertStatusTransition("closed", "pending")).toThrow("Invalid status transition");
     expect(() => assertStatusTransition("closed", "open")).not.toThrow();
+  });
+
+  it("allows archiving from resolved or closed and restoring to open", () => {
+    expect(() => assertStatusTransition("resolved", "archived")).not.toThrow();
+    expect(() => assertStatusTransition("closed", "archived")).not.toThrow();
+    expect(() => assertStatusTransition("archived", "open")).not.toThrow();
+  });
+
+  it("rejects archiving from non-terminal statuses and invalid archived exits", () => {
+    expect(() => assertStatusTransition("open", "archived")).toThrow("Invalid status transition");
+    expect(() => assertStatusTransition("pending", "archived")).toThrow("Invalid status transition");
+    expect(() => assertStatusTransition("archived", "pending")).toThrow("Invalid status transition");
   });
 
   it("normalizes tags into stable slugs", () => {
@@ -57,6 +75,15 @@ describe("domain rules", () => {
     expect(summary.byStatus.open).toBe(1);
     expect(summary.byPriority.low).toBe(1);
     expect(summary.unassigned).toBe(2);
+  });
+
+  it("counts archived tickets in the dashboard byStatus breakdown", () => {
+    const summary = summarizeDashboard([
+      baseTicket,
+      { ...baseTicket, id: "t-2", status: "archived", slaState: "stopped" },
+      { ...baseTicket, id: "t-3", status: "archived", slaState: "stopped" }
+    ]);
+    expect(summary.byStatus.archived).toBe(2);
   });
 });
 

@@ -73,5 +73,50 @@ describe("helpdesk API", () => {
     expect(assigned.json().tickets[0].assignee.id).toBe("agent_mira");
     await app.close();
   });
+
+  it("archives a resolved ticket with stopped SLA and restores it to open", async () => {
+    const { app } = await createSeededApp();
+    const created = await app.inject({
+      method: "POST",
+      url: "/tickets",
+      payload: {
+        title: "Duplicate invoice emailed to customer",
+        description: "Customer received the same invoice twice and wants it voided.",
+        requester: {
+          name: "Priya Rao",
+          email: "priya@example.com"
+        },
+        priority: "normal",
+        tags: ["billing"]
+      }
+    });
+    expect(created.statusCode).toBe(201);
+    const ticketId = created.json().ticket.id;
+
+    const resolved = await app.inject({
+      method: "PATCH",
+      url: `/tickets/${ticketId}`,
+      payload: { status: "resolved" }
+    });
+    expect(resolved.statusCode).toBe(200);
+
+    const archived = await app.inject({
+      method: "PATCH",
+      url: `/tickets/${ticketId}`,
+      payload: { status: "archived" }
+    });
+    expect(archived.statusCode).toBe(200);
+    expect(archived.json().ticket.status).toBe("archived");
+    expect(archived.json().ticket.slaState).toBe("stopped");
+
+    const restored = await app.inject({
+      method: "PATCH",
+      url: `/tickets/${ticketId}`,
+      payload: { status: "open" }
+    });
+    expect(restored.statusCode).toBe(200);
+    expect(restored.json().ticket.status).toBe("open");
+    await app.close();
+  });
 });
 
