@@ -7,3 +7,9 @@ data/*.sqlite
 data/*.sqlite-shm
 data/*.sqlite-wal
 
+# VCM:BEGIN version=1
+# VCM runtime task metadata, handoffs, session records, logs, and task worktrees.
+.ai/vcm/
+.claude/worktrees/
+.ai/tools/__pycache__/
+# VCM:END
