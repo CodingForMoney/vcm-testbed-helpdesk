@@ -68,6 +68,7 @@ Map work to the cheapest level that proves it; escalate as scope widens.
 | API-1 | Health check | `GET /health` | Server boots and responds | `200`, body `{ ok: true }` | Any API change |
 | API-2 | List + dashboard from seed | `GET /tickets?search=billing`, `GET /dashboard` | Read path, filtering, aggregation | tickets length > 0; `dashboard.total === 4` | API/repo/domain change |
 | API-3 | Create → comment → bulk assign | `POST /tickets`, `POST /tickets/:id/comments`, `POST /tickets/bulk/assign` | Write path, validation, audit, bulk ops | create `201`; comment `201` and one comment; assign `200` with `assignee.id === "agent_mira"` | API/repo change |
+| API-4 | Archive + restore lifecycle | `POST /tickets`, `PATCH /tickets/:id` (→resolved→archived→open) | `archived` status flows through API contract, domain transition rules, and SLA | resolve `200`; archive `200` with `status === "archived"` and `slaState === "stopped"`; restore `200` with `status === "open"` | Status set / transition / SLA change |
 
 ## E2E / Manual UI Cases (L3)
 
@@ -79,7 +80,8 @@ and verify:
 | UI-1 | Queue loads | Web home | List + dashboard render | tickets and metric bar populate | manual |
 | UI-2 | Search and filters | Filters bar | Filter wiring to API | results narrow by search/status/priority/assignee | manual |
 | UI-3 | Open ticket detail | Ticket list | Detail fetch | description, comments, audit log show | manual |
-| UI-4 | Status change | Detail controls | Update + audit | new audit entry appears | manual |
+| UI-4 | Status change | Detail controls | Update + audit | new audit entry appears; `archived` appears in the detail status dropdown and (from a `resolved`/`closed` ticket) sets the SLA pill to stopped | manual |
+| UI-8 | Archived filter + tile | Filters bar + dashboard | Archived surfaced in queue filter and metrics | status filter offers `archived` and narrows the queue; dashboard shows an `Archived` count | manual |
 | UI-5 | Add comment | Detail comment box | Append comment | comment appears on selected ticket | manual |
 | UI-6 | Create ticket | Create form | Create flow | new ticket added and selected | manual |
 | UI-7 | Bulk assign / tag | Bulk toolbar | Bulk mutations | selected tickets update assignee/tags | manual |
