@@ -282,6 +282,86 @@
           "signature": "export function toSummary(details: TicketDetails): TicketSummary"
         },
         {
+          "path": "SAVED_FILTER_FIELDS",
+          "kind": "const",
+          "name": "SAVED_FILTER_FIELDS",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 6
+          },
+          "signature": "export const SAVED_FILTER_FIELDS = [\"search\", \"status\", \"priority\", \"assigneeId\", \"tag\"] as const"
+        },
+        {
+          "path": "SavedFilterError",
+          "kind": "type",
+          "name": "SavedFilterError",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 12
+          },
+          "signature": "export type SavedFilterError = \"empty-name\" | \"duplicate-name\" | \"not-found\""
+        },
+        {
+          "path": "SavedFilterMutation",
+          "kind": "type",
+          "name": "SavedFilterMutation",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 17
+          },
+          "signature": "export type SavedFilterMutation = |"
+        },
+        {
+          "path": "normalizeSavedFilterName",
+          "kind": "function",
+          "name": "normalizeSavedFilterName",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 24
+          },
+          "signature": "export function normalizeSavedFilterName(name: string): string"
+        },
+        {
+          "path": "pickSavedFilterFields",
+          "kind": "function",
+          "name": "pickSavedFilterFields",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 32
+          },
+          "signature": "export function pickSavedFilterFields(filter: TicketFilter): TicketFilter"
+        },
+        {
+          "path": "addSavedFilter",
+          "kind": "function",
+          "name": "addSavedFilter",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 47
+          },
+          "signature": "export function addSavedFilter( filters: SavedFilter[], input: { id: string; name: string; filter: TicketFilter } ): SavedFilterMutation"
+        },
+        {
+          "path": "renameSavedFilter",
+          "kind": "function",
+          "name": "renameSavedFilter",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 67
+          },
+          "signature": "export function renameSavedFilter(filters: SavedFilter[], id: string, name: string): SavedFilterMutation"
+        },
+        {
+          "path": "deleteSavedFilter",
+          "kind": "function",
+          "name": "deleteSavedFilter",
+          "source": {
+            "path": "packages/domain/src/savedFilters.ts",
+            "line": 84
+          },
+          "signature": "export function deleteSavedFilter(filters: SavedFilter[], id: string): SavedFilter[]"
+        },
+        {
           "path": "TICKET_STATUSES",
           "kind": "const",
           "name": "TICKET_STATUSES",
@@ -402,12 +482,22 @@
           "signature": "export interface TicketFilter"
         },
         {
+          "path": "SavedFilter",
+          "kind": "interface",
+          "name": "SavedFilter",
+          "source": {
+            "path": "packages/domain/src/types.ts",
+            "line": 76
+          },
+          "signature": "export interface SavedFilter"
+        },
+        {
           "path": "DashboardSummary",
           "kind": "interface",
           "name": "DashboardSummary",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 71
+            "line": 82
           },
           "signature": "export interface DashboardSummary"
         },
@@ -417,7 +507,7 @@
           "name": "CreateTicketInput",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 79
+            "line": 90
           },
           "signature": "export interface CreateTicketInput"
         },
@@ -427,7 +517,7 @@
           "name": "UpdateTicketInput",
           "source": {
             "path": "packages/domain/src/types.ts",
-            "line": 88
+            "line": 99
           },
           "signature": "export interface UpdateTicketInput"
         }

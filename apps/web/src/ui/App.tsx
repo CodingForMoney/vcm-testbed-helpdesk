@@ -2,13 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import type {
   Agent,
   DashboardSummary,
+  SavedFilter,
   TicketDetails,
   TicketFilter,
   TicketPriority,
   TicketStatus,
   TicketSummary
 } from "@vcm-testbed/domain";
-import { TICKET_STATUSES } from "@vcm-testbed/domain";
+import {
+  TICKET_STATUSES,
+  addSavedFilter,
+  deleteSavedFilter,
+  renameSavedFilter
+} from "@vcm-testbed/domain";
 import {
   addComment,
   bulkAssign,
@@ -20,6 +26,15 @@ import {
   listTickets,
   updateTicket
 } from "../api.js";
+import { loadSavedFilters, storeSavedFilters } from "../savedFilters.js";
+
+// User-facing messages for saved-filter validation failures returned by the
+// domain rules, surfaced through the existing error banner.
+const SAVED_FILTER_ERROR_MESSAGES = {
+  "empty-name": "Enter a name for the saved filter.",
+  "duplicate-name": "A saved filter with that name already exists.",
+  "not-found": "That saved filter no longer exists."
+} as const;
 
 const ALL_STATUS: Array<TicketStatus | "all"> = ["all", ...TICKET_STATUSES];
 const ALL_PRIORITY: Array<TicketPriority | "all"> = ["all", "urgent", "high", "normal", "low"];
@@ -32,8 +47,44 @@ export function App() {
   const [selectedTicket, setSelectedTicket] = useState<TicketDetails | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filter, setFilter] = useState<TicketFilter>({ status: "all", priority: "all", assigneeId: "all" });
+  const [savedFilters, setSavedFilters] = useState<SavedFilter[]>(() => loadSavedFilters());
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  function persistSavedFilters(next: SavedFilter[]) {
+    setSavedFilters(next);
+    storeSavedFilters(next);
+  }
+
+  function applySavedFilter(saved: SavedFilter) {
+    const nextFilter = { ...saved.filter };
+    setFilter(nextFilter);
+    void run(async () => refresh(nextFilter));
+  }
+
+  function saveCurrentFilter(name: string) {
+    void run(async () => {
+      const result = addSavedFilter(savedFilters, { id: crypto.randomUUID(), name, filter });
+      if (!result.ok) {
+        throw new Error(SAVED_FILTER_ERROR_MESSAGES[result.error]);
+      }
+      persistSavedFilters(result.filters);
+    });
+  }
+
+  function renameSaved(id: string, name: string) {
+    void run(async () => {
+      const result = renameSavedFilter(savedFilters, id, name);
+      if (!result.ok) {
+        throw new Error(SAVED_FILTER_ERROR_MESSAGES[result.error]);
+      }
+      persistSavedFilters(result.filters);
+    });
+  }
+
+  function removeSaved(id: string) {
+    persistSavedFilters(deleteSavedFilter(savedFilters, id));
+  }
 
   async function refresh(nextFilter = filter) {
     const [nextAgents, nextDashboard, nextTickets] = await Promise.all([
@@ -109,6 +160,14 @@ export function App() {
               setFilter(nextFilter);
               void run(async () => refresh(nextFilter));
             }}
+          />
+          <SavedFilters
+            savedFilters={savedFilters}
+            busy={busy}
+            onSave={saveCurrentFilter}
+            onApply={applySavedFilter}
+            onRename={renameSaved}
+            onDelete={removeSaved}
           />
           <BulkToolbar
             agents={agents}
@@ -214,6 +273,58 @@ function Filters({ agents, filter, onChange }: { agents: Agent[]; filter: Ticket
         <option value="unassigned">unassigned</option>
         {agents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}
       </select>
+    </section>
+  );
+}
+
+function SavedFilters({
+  savedFilters,
+  busy,
+  onSave,
+  onApply,
+  onRename,
+  onDelete
+}: {
+  savedFilters: SavedFilter[];
+  busy: boolean;
+  onSave(name: string): void;
+  onApply(saved: SavedFilter): void;
+  onRename(id: string, name: string): void;
+  onDelete(id: string): void;
+}) {
+  const [name, setName] = useState("");
+  return (
+    <section className="saved-filters">
+      <strong>Saved filters</strong>
+      <div className="saved-filter-add">
+        <input
+          placeholder="Name this filter"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
+        <button type="button" disabled={busy || !name.trim()} onClick={() => {
+          onSave(name);
+          setName("");
+        }}>
+          Save
+        </button>
+      </div>
+      <ul className="saved-filter-list">
+        {savedFilters.map((saved) => (
+          <li key={saved.id}>
+            <button type="button" disabled={busy} onClick={() => onApply(saved)}>{saved.name}</button>
+            <button type="button" disabled={busy} onClick={() => {
+              const nextName = window.prompt("Rename saved filter", saved.name);
+              if (nextName !== null) {
+                onRename(saved.id, nextName);
+              }
+            }}>
+              Rename
+            </button>
+            <button type="button" disabled={busy} onClick={() => onDelete(saved.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

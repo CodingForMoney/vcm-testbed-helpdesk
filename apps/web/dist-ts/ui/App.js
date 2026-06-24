@@ -1,7 +1,15 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useMemo, useState } from "react";
-import { TICKET_STATUSES } from "@vcm-testbed/domain";
+import { TICKET_STATUSES, addSavedFilter, deleteSavedFilter, renameSavedFilter } from "@vcm-testbed/domain";
 import { addComment, bulkAssign, bulkTag, createTicket, getDashboard, getTicket, listAgents, listTickets, updateTicket } from "../api.js";
+import { loadSavedFilters, storeSavedFilters } from "../savedFilters.js";
+// User-facing messages for saved-filter validation failures returned by the
+// domain rules, surfaced through the existing error banner.
+const SAVED_FILTER_ERROR_MESSAGES = {
+    "empty-name": "Enter a name for the saved filter.",
+    "duplicate-name": "A saved filter with that name already exists.",
+    "not-found": "That saved filter no longer exists."
+};
 const ALL_STATUS = ["all", ...TICKET_STATUSES];
 const ALL_PRIORITY = ["all", "urgent", "high", "normal", "low"];
 export function App() {
@@ -12,8 +20,39 @@ export function App() {
     const [selectedTicket, setSelectedTicket] = useState(null);
     const [selectedIds, setSelectedIds] = useState([]);
     const [filter, setFilter] = useState({ status: "all", priority: "all", assigneeId: "all" });
+    const [savedFilters, setSavedFilters] = useState(() => loadSavedFilters());
     const [error, setError] = useState("");
     const [busy, setBusy] = useState(false);
+    function persistSavedFilters(next) {
+        setSavedFilters(next);
+        storeSavedFilters(next);
+    }
+    function applySavedFilter(saved) {
+        const nextFilter = { ...saved.filter };
+        setFilter(nextFilter);
+        void run(async () => refresh(nextFilter));
+    }
+    function saveCurrentFilter(name) {
+        void run(async () => {
+            const result = addSavedFilter(savedFilters, { id: crypto.randomUUID(), name, filter });
+            if (!result.ok) {
+                throw new Error(SAVED_FILTER_ERROR_MESSAGES[result.error]);
+            }
+            persistSavedFilters(result.filters);
+        });
+    }
+    function renameSaved(id, name) {
+        void run(async () => {
+            const result = renameSavedFilter(savedFilters, id, name);
+            if (!result.ok) {
+                throw new Error(SAVED_FILTER_ERROR_MESSAGES[result.error]);
+            }
+            persistSavedFilters(result.filters);
+        });
+    }
+    function removeSaved(id) {
+        persistSavedFilters(deleteSavedFilter(savedFilters, id));
+    }
     async function refresh(nextFilter = filter) {
         const [nextAgents, nextDashboard, nextTickets] = await Promise.all([
             listAgents(),
@@ -62,7 +101,7 @@ export function App() {
     return (_jsxs("main", { className: "app-shell", children: [_jsxs("header", { className: "app-header", children: [_jsxs("div", { children: [_jsx("h1", { children: "Helpdesk Testbed" }), _jsx("p", { children: "Ticket triage, SLA risk, comments, tags, ownership, and audit trail." })] }), _jsx("button", { type: "button", disabled: busy, onClick: () => void run(refreshCurrent), children: "Refresh" })] }), error ? _jsx("div", { className: "error-banner", children: error }) : null, _jsx(DashboardBar, { dashboard: dashboard }), _jsxs("section", { className: "workspace", children: [_jsxs("aside", { className: "queue-pane", children: [_jsx(Filters, { agents: agents, filter: filter, onChange: (nextFilter) => {
                                     setFilter(nextFilter);
                                     void run(async () => refresh(nextFilter));
-                                } }), _jsx(BulkToolbar, { agents: agents, selectedIds: selectedIds, onAssign: (assigneeId) => void run(async () => {
+                                } }), _jsx(SavedFilters, { savedFilters: savedFilters, busy: busy, onSave: saveCurrentFilter, onApply: applySavedFilter, onRename: renameSaved, onDelete: removeSaved }), _jsx(BulkToolbar, { agents: agents, selectedIds: selectedIds, onAssign: (assigneeId) => void run(async () => {
                                     await bulkAssign(selectedIds, assigneeId);
                                     setSelectedIds([]);
                                     await refreshCurrent();
@@ -102,6 +141,18 @@ function DashboardBar({ dashboard }) {
 }
 function Filters({ agents, filter, onChange }) {
     return (_jsxs("section", { className: "filters", children: [_jsx("input", { placeholder: "Search queue", value: filter.search ?? "", onChange: (event) => onChange({ ...filter, search: event.target.value }) }), _jsx("select", { value: filter.status ?? "all", onChange: (event) => onChange({ ...filter, status: event.target.value }), children: ALL_STATUS.map((status) => _jsx("option", { value: status, children: status }, status)) }), _jsx("select", { value: filter.priority ?? "all", onChange: (event) => onChange({ ...filter, priority: event.target.value }), children: ALL_PRIORITY.map((priority) => _jsx("option", { value: priority, children: priority }, priority)) }), _jsxs("select", { value: filter.assigneeId ?? "all", onChange: (event) => onChange({ ...filter, assigneeId: event.target.value }), children: [_jsx("option", { value: "all", children: "all assignees" }), _jsx("option", { value: "unassigned", children: "unassigned" }), agents.map((agent) => _jsx("option", { value: agent.id, children: agent.name }, agent.id))] })] }));
+}
+function SavedFilters({ savedFilters, busy, onSave, onApply, onRename, onDelete }) {
+    const [name, setName] = useState("");
+    return (_jsxs("section", { className: "saved-filters", children: [_jsx("strong", { children: "Saved filters" }), _jsxs("div", { className: "saved-filter-add", children: [_jsx("input", { placeholder: "Name this filter", value: name, onChange: (event) => setName(event.target.value) }), _jsx("button", { type: "button", disabled: busy || !name.trim(), onClick: () => {
+                            onSave(name);
+                            setName("");
+                        }, children: "Save" })] }), _jsx("ul", { className: "saved-filter-list", children: savedFilters.map((saved) => (_jsxs("li", { children: [_jsx("button", { type: "button", disabled: busy, onClick: () => onApply(saved), children: saved.name }), _jsx("button", { type: "button", disabled: busy, onClick: () => {
+                                const nextName = window.prompt("Rename saved filter", saved.name);
+                                if (nextName !== null) {
+                                    onRename(saved.id, nextName);
+                                }
+                            }, children: "Rename" }), _jsx("button", { type: "button", disabled: busy, onClick: () => onDelete(saved.id), children: "Delete" })] }, saved.id))) })] }));
 }
 function BulkToolbar({ agents, selectedIds, onAssign, onTag }) {
     const [assigneeId, setAssigneeId] = useState("");

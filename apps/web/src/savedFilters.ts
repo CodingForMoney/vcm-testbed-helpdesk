@@ -8,8 +8,19 @@ export const SAVED_FILTERS_STORAGE_KEY = "vcm-helpdesk.saved-filters.v1";
 // empty array when storage is unavailable, empty, malformed JSON, or not an
 // array of well-formed `SavedFilter` entries. Never throws.
 export function loadSavedFilters(): SavedFilter[] {
-  // VCM:CODE SCF-005
-  throw new Error("not implemented");
+  try {
+    const raw = window.localStorage.getItem(SAVED_FILTERS_STORAGE_KEY);
+    if (raw === null) {
+      return [];
+    }
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.filter(isSavedFilter);
+  } catch {
+    return [];
+  }
 }
 
 // Persist the saved-filter collection to localStorage as JSON under
@@ -17,6 +28,26 @@ export function loadSavedFilters(): SavedFilter[] {
 // quota or unavailable storage) so UI flows never crash on persistence. Never
 // throws.
 export function storeSavedFilters(filters: SavedFilter[]): void {
-  // VCM:CODE SCF-005
-  throw new Error("not implemented");
+  try {
+    window.localStorage.setItem(SAVED_FILTERS_STORAGE_KEY, JSON.stringify(filters));
+  } catch {
+    // Persistence is best-effort; storage failures must not break UI flows.
+  }
+}
+
+// Narrow an unknown stored entry to a well-formed `SavedFilter`. A persisted
+// entry must have string `id`/`name` and an object `filter`; malformed entries
+// are dropped on load.
+function isSavedFilter(value: unknown): value is SavedFilter {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const entry = value as Record<string, unknown>;
+  return (
+    typeof entry.id === "string" &&
+    typeof entry.name === "string" &&
+    typeof entry.filter === "object" &&
+    entry.filter !== null &&
+    !Array.isArray(entry.filter)
+  );
 }
