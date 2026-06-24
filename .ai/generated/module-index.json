@@ -49,9 +49,12 @@
             "source": [
               "apps/web/src/api.ts",
               "apps/web/src/main.tsx",
+              "apps/web/src/savedFilters.ts",
               "apps/web/src/ui/App.tsx"
             ],
-            "tests": []
+            "tests": [
+              "apps/web/src/savedFilters.test.ts"
+            ]
           }
         }
       ]
@@ -90,10 +93,12 @@
             "source": [
               "packages/domain/src/index.ts",
               "packages/domain/src/rules.ts",
+              "packages/domain/src/savedFilters.ts",
               "packages/domain/src/types.ts"
             ],
             "tests": [
-              "packages/domain/src/rules.test.ts"
+              "packages/domain/src/rules.test.ts",
+              "packages/domain/src/savedFilters.test.ts"
             ]
           }
         }

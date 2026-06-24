@@ -68,6 +68,17 @@ export interface TicketFilter {
   tag?: string | undefined;
 }
 
+// A named, reusable ticket-queue filter. `filter` carries only the supported
+// queue fields (search, status, priority, assigneeId, tag). `name` is the
+// human label; uniqueness is enforced case-insensitively by the saved-filter
+// rules, not by this type. `id` is a caller-supplied stable identifier used to
+// rename or delete the entry.
+export interface SavedFilter {
+  id: string;
+  name: string;
+  filter: TicketFilter;
+}
+
 export interface DashboardSummary {
   total: number;
   byStatus: Record<TicketStatus, number>;

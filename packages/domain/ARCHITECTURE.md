@@ -10,12 +10,16 @@ The shared domain layer. It owns:
 
 - **Types** (`src/types.ts`): the canonical shapes for `TicketStatus`,
   `TicketPriority`, `SlaState`, `Requester`, `Agent`, `Comment`, `AuditEntry`,
-  `TicketSummary`, `TicketDetails`, `TicketFilter`, `DashboardSummary`,
-  `CreateTicketInput`, `UpdateTicketInput`, plus the `TICKET_STATUSES` and
-  `TICKET_PRIORITIES` constant tuples.
+  `TicketSummary`, `TicketDetails`, `TicketFilter`, `SavedFilter`,
+  `DashboardSummary`, `CreateTicketInput`, `UpdateTicketInput`, plus the
+  `TICKET_STATUSES` and `TICKET_PRIORITIES` constant tuples.
 - **Rules** (`src/rules.ts`): pure functions for SLA state, due-date
   computation, tag normalization, status-transition validation, queue
   filtering, dashboard summarization, and summary projection.
+- **Saved-filter rules** (`src/savedFilters.ts`): pure validation and immutable
+  collection operations for named queue filters — name normalization,
+  supported-field projection, and add/rename/delete with case-insensitive
+  uniqueness. Persistence itself is a consumer concern, not owned here.
 
 This module is the single source of truth for the domain contract reused by the
 database, API, and web layers.
@@ -45,6 +49,15 @@ database, API, and web layers.
 - `summarizeDashboard`: aggregates counts by status, priority, SLA state, total,
   and unassigned.
 - `toSummary`: drops detail-only fields from a `TicketDetails`.
+- Saved-filter rules (`addSavedFilter`/`renameSavedFilter`/`deleteSavedFilter`,
+  with `normalizeSavedFilterName` and `pickSavedFilterFields`): operate on an
+  immutable `SavedFilter[]`. Names are normalized (trim + collapse whitespace);
+  blank names and case-insensitive duplicates are rejected. Mutations return a
+  `SavedFilterMutation` discriminated result (`empty-name`, `duplicate-name`,
+  `not-found`) instead of throwing; delete is idempotent. A stored filter is
+  projected to the supported fields only (`search`, `status`, `priority`,
+  `assigneeId`, `tag`) so it can never carry unsupported criteria. Entry ids are
+  caller-supplied to keep the rules deterministic and side-effect free.
 
 ## Public Surface Intent
 
@@ -59,9 +72,13 @@ complete exported list with source locations.
   `web`; treat these as contract changes.
 - SLA constants (4h due-soon window, per-priority windows) are encoded here and
   must not be duplicated downstream.
+- `pickSavedFilterFields` is the single guard that keeps saved filters within the
+  supported field set; it must be updated in lockstep if `TicketFilter` gains or
+  loses a field, or stale/unsupported criteria can be persisted.
 
 ## Update Triggers
 
 Update this doc when domain types change, when a rule's behavior or constants
-change, or when a new shared rule/type is added. Re-run the generators after
-exported surface changes.
+change, when a new shared rule/type is added, or when the saved-filter
+supported-field set or uniqueness/normalization policy changes. Re-run the
+generators after exported surface changes.

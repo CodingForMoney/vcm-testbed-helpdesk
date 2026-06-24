@@ -29,7 +29,10 @@ Map work to the cheapest level that proves it; escalate as scope widens.
 - **L0 — fast checks**: `npm run typecheck` (and `npm run lint`). Catches type,
   contract, and boundary errors across all modules. Run on every change.
 - **L1 — unit checks**: `npm test` filtered to the changed unit
-  (`npx vitest run packages/domain` or a single file). Covers pure domain rules.
+  (`npx vitest run packages/domain` or a single file). Covers pure domain rules
+  and the web `localStorage` saved-filter adapter
+  (`apps/web/src/savedFilters.test.ts`, run in the Node environment with a
+  stubbed `window.localStorage`).
 - **L2 — module / integration checks**: `npm test` including
   `apps/api/src/app.test.ts`, which exercises the Fastify app against an
   in-memory SQLite repository (HTTP → repository → domain → persistence). Run
@@ -57,7 +60,12 @@ Map work to the cheapest level that proves it; escalate as scope widens.
   (e.g. `rules.test.ts`). Pure-function tests with fixed `now` for determinism.
 - **API integration tests**: `apps/api/src/*.test.ts` (e.g. `app.test.ts`).
   Use Fastify `inject` against a seeded in-memory (`:memory:`) repository.
-- **Web**: no automated tests yet.
+- **Web adapter unit tests**: `apps/web/src/savedFilters.test.ts`. Exercises the
+  `localStorage` saved-filter adapter by installing a fake `window.localStorage`
+  on `globalThis` (tests run in the Node environment). Proves the load/store
+  round-trip and the "tolerates garbage, never throws" contract.
+- **Web UI wiring** (`App.tsx` components): no automated tests yet; validated by
+  typecheck/build and manual checks.
 - Test discovery: `vitest.config.ts` includes `apps/**/*.test.ts` and
   `packages/**/*.test.ts` in the Node environment.
 
@@ -85,6 +93,7 @@ and verify:
 | UI-5 | Add comment | Detail comment box | Append comment | comment appears on selected ticket | manual |
 | UI-6 | Create ticket | Create form | Create flow | new ticket added and selected | manual |
 | UI-7 | Bulk assign / tag | Bulk toolbar | Bulk mutations | selected tickets update assignee/tags | manual |
+| UI-9 | Saved queue filters | "Saved filters" control in the queue pane | Save/apply/rename/delete + per-browser persistence | Save current filter under a name → appears in list; reload → still present; apply → queue narrows to saved criteria; rename → label changes; delete → removed; empty name and case-insensitive duplicate name show the error banner and do not change the stored list | manual; per-browser only (localStorage); domain rules + adapter are unit-covered, only the React wiring is manual |
 
 Recommended future automation (e.g. Playwright): UI-1, UI-2 (overdue/urgent
 filter), UI-6, UI-7, and comment→audit verification.
@@ -115,8 +124,16 @@ Stale generated context is a review finding.
 
 ## Known Testing Gaps
 
-- No automated tests for `apps/web`; the UI is validated by typecheck/build and
-  manual checks only.
+- `apps/web` has one adapter-level unit test (`savedFilters.test.ts`); the React
+  UI components (`App.tsx`) still have no automated tests and are validated by
+  typecheck/build and manual checks only.
+- Build-cache hygiene: `*.tsbuildinfo` and `apps/web/dist-ts/` are tracked in
+  git while the corresponding `dist/` outputs are not. A partial cleanup (e.g.
+  deleting `dist/` but restoring tracked `tsbuildinfo` via `git checkout`) leaves
+  stale incremental state and makes `npm run build` fail with TS6305. Always do a
+  *full* cache clean (remove `dist/`, `dist-ts/`, and all `*.tsbuildinfo`) before
+  a fresh build; do not partially restore these. Tracking build artifacts is a
+  pre-existing repo-hygiene smell (candidate for `.gitignore`).
 - No dedicated `packages/db` repository tests; persistence is covered indirectly
   through the API integration test.
 - No automated browser E2E (L3); critical journeys are manual.
