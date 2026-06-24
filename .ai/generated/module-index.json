@@ -52,7 +52,9 @@
               "apps/web/src/savedFilters.ts",
               "apps/web/src/ui/App.tsx"
             ],
-            "tests": []
+            "tests": [
+              "apps/web/src/savedFilters.test.ts"
+            ]
           }
         }
       ]

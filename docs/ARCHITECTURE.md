@@ -16,10 +16,11 @@ packages/db      SQLite repository (better-sqlite3) + schema/migration
 packages/domain  Shared domain types and pure business rules
 ```
 
-The API owns persistence and exposes JSON endpoints. The web app talks only to
-the API over HTTP. All shared business rules — SLA state, due-date computation,
-status transitions, tag normalization, queue filtering, and dashboard
-summaries — live in `packages/domain` and are pure and framework-free.
+The API owns server-side persistence and exposes JSON endpoints. The web app
+talks only to the API over HTTP. All shared business rules — SLA state, due-date
+computation, status transitions, tag normalization, queue filtering, saved-queue-
+filter validation, and dashboard summaries — live in `packages/domain` and are
+pure and framework-free.
 
 ## Module Overview and Responsibilities
 
@@ -96,10 +97,13 @@ handler: Zod errors → 400, "not found" errors → 404, otherwise 500.
 ## Web UI
 
 `apps/web` renders a queue-first workspace from a single `App` component:
-dashboard metric bar, filters/search, multi-select ticket list, ticket detail
-panel (status/priority/assignee controls, comments, audit log), bulk action
-toolbar (assign/tag), and a create-ticket form. State is local React state;
-data is fetched through the thin client in `apps/web/src/api.ts`.
+dashboard metric bar, filters/search, saved queue filters (save/apply/rename/
+delete), multi-select ticket list, ticket detail panel (status/priority/assignee
+controls, comments, audit log), bulk action toolbar (assign/tag), and a
+create-ticket form. State is local React state; data is fetched through the thin
+client in `apps/web/src/api.ts`. Saved queue filters are persisted per-browser in
+`localStorage` (`apps/web/src/savedFilters.ts`); their validation/mutation rules
+come from `packages/domain` and there is no server-side or cross-device sync.
 
 ## Project-Wide Constraints
 
@@ -132,4 +136,8 @@ Regenerate after structural changes with `.ai/tools/generate-module-index` then
 - No authentication in the current version.
 - No migrations framework; schema setup is deterministic and idempotent.
 - API contracts are shared by convention rather than generated OpenAPI.
-- The web app has no automated test coverage yet (see `docs/TESTING.md`).
+- Saved queue filters persist only in the browser (`localStorage`), so they are
+  per-browser and not shared across agents or devices — intentional given the
+  auth-less, single-tenant scope.
+- The web app's React UI has no automated test coverage yet; only the
+  client-side `savedFilters` adapter is unit-tested (see `docs/TESTING.md`).
